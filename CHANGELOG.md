@@ -3,6 +3,18 @@
 Versions are the launcher's (`3.2-nothingX.Y`, versionCode in brackets).
 The base is upstream v3.2 (versionCode 11).
 
+## nothing5.8 (47) — 2026-10-31
+- **Theme picker**: a small palette-icon pill now sits left of the Inputs
+  pill. It opens a list of all six themes (the active one marked ●);
+  picking one switches straight to it. The Settings menu's Theme row
+  opens the same list.
+- **Fix**: theme switching could toggle between the first theme and
+  Persebaya only. `ClubTheme.next()` compared theme objects by
+  reference, but the live overlay returns copies, so the comparison
+  missed for every theme with live data; it now compares by id.
+- Header: the left block no longer ends where the pill row starts, so
+  the date line keeps its full width with the extra pill present.
+
 ## nothing5.7 (46) — 2026-10-31
 - Live-data overlay: `ClubTheme.current()` now overlays data published by
   the new **TV Live Feed** add-on (v1.0) over the baked snapshot, per

@@ -10,7 +10,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 /**
- * The club themes the user switches between (his decision, 2026-10-31: ONE app
+ * The club themes Rheza switches between (his decision, 2026-10-31: ONE app
  * with switchable themes — "lebih simple" — instead of a separate APK per
  * theme; the switch lives in the Settings long-press menu, Home setup and the
  * Home key helper are untouched). Each theme carries its football card data
@@ -50,7 +50,7 @@ final class ClubTheme {
     final String[] points;
     final int highlightRow;
     // Position labels for the standings rows, one per row (normally 1-8;
-    // Manchester United's card shows 1-7 then 16 — user's pick, 2026-10-31).
+    // Manchester United's card shows 1-7 then 16 — Rheza's pick, 2026-10-31).
     final String[] positions;
     // Accents: band/bar colour and its brighter text variant, both sampled
     // from the crest (Persebaya #0C8544/#10B45C; Como #13446B/#2481CB).
@@ -159,7 +159,7 @@ final class ClubTheme {
     // matchday 8: TheStatsAPI table updated 31 Oct 2026; results
     // cross-checked on PLStats and FootballDatabase). United sit 16th, so
     // the standings card shows positions 1-7, then 16 with United on the
-    // last row (user's pick, 2026-10-31).
+    // last row (Rheza's pick, 2026-10-31).
     // FORM, oldest first (league only): MD4 L, MD5 D, MD6 D, MD7 D 1-1 at
     // Fulham (10 Oct), MD8 L 0-3 vs Bournemouth (25 Oct). The Chelsea match
     // kicked off the same evening this snapshot was taken (31 Oct 19:30 WIB).
@@ -275,7 +275,7 @@ final class ClubTheme {
             0, POS_1_TO_8, 0xFFC30038, 0xFFFF5C78,
             "wallpaper_barcelona.jpg");
 
-    /** All themes in user's order (set 2026-10-31); the Settings row cycles it. */
+    /** All themes in Rheza's order (set 2026-10-31); the Settings row cycles it. */
     static final ClubTheme[] ALL = {PERSEBAYA, COMO, MANUTD, ARSENAL, LIVERPOOL, BARCELONA};
 
     static ClubTheme current(Context ctx) {
@@ -349,10 +349,14 @@ final class ClubTheme {
         return out;
     }
 
-    /** The next theme in user's order, wrapping back to Persebaya. */
+    /** The next theme in the user's order, wrapping back to Persebaya.
+     *  Compare by id, never by reference: ClubTheme.current() may hand back
+     *  a live-data copy (withLive), which is not the canonical ALL entry —
+     *  a == check silently fell through to PERSEBAYA for every theme with
+     *  live data, which read as a Persebaya/Como toggle (bug in v5.7). */
     ClubTheme next() {
         for (int i = 0; i < ALL.length; i++) {
-            if (ALL[i] == this) return ALL[(i + 1) % ALL.length];
+            if (ALL[i].id.equals(id)) return ALL[(i + 1) % ALL.length];
         }
         return PERSEBAYA;
     }

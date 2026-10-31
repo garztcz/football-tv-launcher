@@ -181,6 +181,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private TextView greeting;
     private View clockBlock;
     private View btnInputs;
+    /** The Theme pill, left of Inputs: opens the club theme picker list. */
+    private View btnTheme;
     /** config show_inputs_pill: false keeps the Inputs pill hidden even when the TV has inputs. */
     private boolean showInputsPill = true;
     private TextView btnWifi;
@@ -521,7 +523,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         sky.setVisibility(View.GONE);
         ambient.setVisibility(View.GONE);
         heroArt.setVisibility(View.GONE);
-        // v3: the Input/Wi-Fi/Setelan pills stay (user's reference header) —
+        // v3: the Input/Wi-Fi/Setelan pills stay (Rheza's reference header) —
         // only the Nothing tabs row is gone, so nothing overlaps any more.
         // The stock clock becomes the hero: Nothing's Doto dot-matrix face.
         android.widget.TextClock nothingClock = findViewById(R.id.clock);
@@ -714,7 +716,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (singleRow && !cfg.alwaysShowNames) want += (int) (29 * density);
             // Nothing build: the Persebaya cards row sits above the grid in the same column, and the
             // stock clearance leaves a dead black band between the cards and the dock row — pull the
-            // row up to just under the cards (2026-10-31).
+            // row up to just under the cards (Rheza, 2026-10-31).
             if (singleRow) want = Math.max((int) (12 * density), want - (int) (34 * density));
             if (grid.getPaddingTop() != want) {
                 grid.setPadding(grid.getPaddingLeft(), want, grid.getPaddingRight(), grid.getPaddingBottom());
@@ -810,6 +812,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
 
         btnInputs = findViewById(R.id.btnInputs);
+        btnTheme = findViewById(R.id.btnTheme);
+        btnTheme.setOnClickListener(v -> showThemePicker());
         View btnSettings = findViewById(R.id.btnSettings);
         btnInputs.setOnClickListener(v -> showInputs());
         btnWifi.setOnClickListener(v -> openNetworkPill());
@@ -868,6 +872,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             // label up to date, which the menu's Wi-Fi row shows.
             showInputsPill = false;
             btnInputs.setVisibility(View.GONE);
+            btnTheme.setVisibility(View.GONE);
             btnWifi.setVisibility(View.GONE);
             ((TextView) btnSettings).setText(R.string.settings);
             ((TextView) btnSettings).setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_settings, 0, 0, 0);
@@ -909,12 +914,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 focusTile(singleRow ? lastFocused : lastFocused % COLUMNS);
                 return true;
             }
-            int firstButton = btnInputs.getVisibility() == View.VISIBLE ? R.id.btnInputs : firstTopButton().getId();
+            int firstButton = btnTheme.getVisibility() == View.VISIBLE ? R.id.btnTheme
+                    : btnInputs.getVisibility() == View.VISIBLE ? R.id.btnInputs : firstTopButton().getId();
             int leftButton = rtlMenuBar ? R.id.btnSettings : firstButton;
             int rightButton = rtlMenuBar ? firstButton : R.id.btnSettings;
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) return v.getId() == leftButton;
             return keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && v.getId() == rightButton;
         };
+        btnTheme.setOnKeyListener(pillKeys);
         btnInputs.setOnKeyListener(pillKeys);
         btnWifi.setOnKeyListener(pillKeys);
         btnVpn.setOnKeyListener(pillKeys);
@@ -923,7 +930,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnLibraryTop.setOnKeyListener(pillKeys);
         for (View button : topAppButtons) button.setOnKeyListener(pillKeys);
         if (advancedEffects) {
-            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, btnReorder, btnLibraryTop, btnSettings));
+            List<View> pills = new ArrayList<>(Arrays.asList(btnTheme, btnInputs, btnWifi, btnVpn, btnReorder, btnLibraryTop, btnSettings));
             pills.addAll(topAppButtons);
             for (View button : pills) {
                 button.setOnFocusChangeListener((view, focused) -> view.animate()
@@ -1432,7 +1439,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         // Nothing build: bridge D-PAD between the app grid and the bottom bar.
         // The stock grid keeps focus inside itself (it scrolls, then wraps to
-        // the top), which left the bottom bar unreachable by remote — the user,
+        // the top), which left the bottom bar unreachable by remote — Rheza,
         // 2026-10-31. DOWN on the grid's last row lands on the bottom bar;
         // UP on a bottom pill returns to the tile the user came from.
         if (!reordering && event.getAction() == KeyEvent.ACTION_DOWN && grid != null) {
@@ -1532,7 +1539,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     /** The reorder button: turns the mode on (focus goes back to the last tile), or off again. */
-    // Nothing build: PS5-style navigation sounds (2026-10-31). Two
+    // Nothing build: PS5-style navigation sounds (Rheza, 2026-10-31). Two
     // soft synthesized blips (res/raw) played through a SoundPool replace the
     // TV's system click: the framework's own effects are silenced on every
     // launcher view (static views here, app tiles in AppAdapter), a global
@@ -3770,12 +3777,34 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    /** Switch the club theme (Persebaya / Como 1907): persist the choice, swap the
-     *  wallpaper, then recreate so the cards and wallpaper rebuild around it. */
-    private void switchClubTheme() {
-        ClubTheme next = ClubTheme.current(this).next();
-        ClubTheme.activate(this, next);
-        Toast.makeText(this, "Theme: " + next.displayName, Toast.LENGTH_SHORT).show();
+    /** The Theme pill's picker: a list of all club themes, the active one
+     *  marked; picking one switches straight to it (no cycling). Also opened
+     *  from the Settings menu's Theme row. */
+    private void showThemePicker() {
+        View anchor = btnTheme;
+        View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
+        LinearLayout rows = panel.findViewById(R.id.rows);
+        PopupWindow popup = glassPopup(panel, (int) (200 * density));
+        String curId = ClubTheme.current(this).id;
+        int focusIdx = 0;
+        for (int i = 0; i < ClubTheme.ALL.length; i++) {
+            ClubTheme t = ClubTheme.ALL[i];
+            if (t.id.equals(curId)) focusIdx = i;
+            addSettingsMenuRow(rows, popup,
+                    (t.id.equals(curId) ? "●  " : "") + t.displayName,
+                    () -> setClubTheme(t));
+        }
+        panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        popup.setWidth(Math.max((int) (200 * density), panel.getMeasuredWidth()));
+        dropIn(popup, panel, anchor, Gravity.END);
+        rows.getChildAt(focusIdx).requestFocus();
+    }
+
+    /** Apply a club theme: persist the choice, swap the wallpaper, then
+     *  recreate so the cards and wallpaper rebuild around it. */
+    private void setClubTheme(ClubTheme t) {
+        ClubTheme.activate(this, t);
+        Toast.makeText(this, "Theme: " + t.displayName, Toast.LENGTH_SHORT).show();
         recreate();
     }
 
@@ -3811,7 +3840,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         addSettingsMenuRow(rows, popup, R.string.make_default_home, this::requestHomeRole);
         addSettingsMenuRow(rows, popup, R.string.stock_launcher, this::openStockLauncher);
         addSettingsMenuRow(rows, popup, "Theme: " + ClubTheme.current(this).displayName,
-                this::switchClubTheme);
+                this::showThemePicker);
         // A launcher may not restart the TV itself; the Home key helper can open the system power menu instead.
         if (HomeKeyService.canOpenPowerMenu()) addSettingsMenuRow(rows, popup, R.string.power_menu, HomeKeyService::openPowerMenu);
         panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
