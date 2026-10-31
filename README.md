@@ -13,6 +13,14 @@ This repository contains two apps:
 | `launcher/` | The home screen itself. **No INTERNET permission** — it never goes online. |
 | `live-feed/` | An optional 25 KB add-on, the only app with internet access. Every 6 hours it refreshes the football cards (fixtures, results, standings) and hands the data to the launcher through a content provider. Without it, the launcher simply shows its built-in snapshot. |
 
+## Screenshot
+
+![Football TV Launcher home screen — Persebaya theme](docs/images/homescreen.png)
+
+*The Persebaya theme on the reference TV (TCL T6C, Google TV): greeting and
+dot-matrix clock, the club card with next-match countdown, recent form and
+the fixture list, and the standings card below.*
+
 ## Features
 
 - Nothing-style header: time-aware greeting, dot-matrix (Doto) clock, date,
