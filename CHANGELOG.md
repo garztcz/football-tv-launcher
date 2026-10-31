@@ -3,6 +3,11 @@
 Versions are the launcher's (`3.2-nothingX.Y`, versionCode in brackets).
 The base is upstream v3.2 (versionCode 11).
 
+## nothing5.10 (49) — 2026-10-31
+- Header alignment: the clock row starts 8dp further right, so the
+  clock's left edge lines up with the greeting and the cards below
+  (the Doto digits previously protruded ~16px left of both).
+
 ## nothing5.9 (48) — 2026-10-31
 - **Doto date**: the header date is now a second dot-matrix hero next to
   the clock, in the short `EEE dd MMM` format ("SAT 31 OCT"). Clock and
