@@ -528,10 +528,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // The stock clock becomes the hero: Nothing's Doto dot-matrix face.
         android.widget.TextClock nothingClock = findViewById(R.id.clock);
         nothingClock.setTypeface(getResources().getFont(R.font.doto_bold));
-        nothingClock.setTextSize(52);
-        TextView nothingDate = findViewById(R.id.date);
-        nothingDate.setTextSize(15);
-        nothingDate.setLetterSpacing(0.08f);
+        // v5.9: the date joins the clock as a second Doto hero in the short
+        // "SAT 31 OCT" format (3-letter day, 2-digit date, 3-letter month).
+        // Clock and date share one size, tuned so clock + divider + date
+        // end before the pill row starts.
+        nothingClock.setTextSize(38);
+        android.widget.TextClock nothingDate = findViewById(R.id.date);
+        nothingDate.setTypeface(getResources().getFont(R.font.doto_bold));
+        nothingDate.setFormat12Hour("EEE dd MMM");
+        nothingDate.setFormat24Hour("EEE dd MMM");
+        nothingDate.setTextSize(38);
+        nothingDate.setLetterSpacing(-0.04f);
+        nothingDate.setTextColor(Color.WHITE);
         nothingDate.setMaxWidth(Integer.MAX_VALUE);   // width, not the XML cap, clipped "SABTU 31 OKTO..."
         greeting = findViewById(R.id.greeting);
         clockBlock = findViewById(R.id.leftBlock);
@@ -914,8 +922,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 focusTile(singleRow ? lastFocused : lastFocused % COLUMNS);
                 return true;
             }
-            int firstButton = btnTheme.getVisibility() == View.VISIBLE ? R.id.btnTheme
-                    : btnInputs.getVisibility() == View.VISIBLE ? R.id.btnInputs : firstTopButton().getId();
+            int firstButton = btnInputs.getVisibility() == View.VISIBLE ? R.id.btnInputs
+                    : btnTheme.getVisibility() == View.VISIBLE ? R.id.btnTheme : firstTopButton().getId();
             int leftButton = rtlMenuBar ? R.id.btnSettings : firstButton;
             int rightButton = rtlMenuBar ? firstButton : R.id.btnSettings;
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) return v.getId() == leftButton;
@@ -930,7 +938,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnLibraryTop.setOnKeyListener(pillKeys);
         for (View button : topAppButtons) button.setOnKeyListener(pillKeys);
         if (advancedEffects) {
-            List<View> pills = new ArrayList<>(Arrays.asList(btnTheme, btnInputs, btnWifi, btnVpn, btnReorder, btnLibraryTop, btnSettings));
+            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnTheme, btnWifi, btnVpn, btnReorder, btnLibraryTop, btnSettings));
             pills.addAll(topAppButtons);
             for (View button : pills) {
                 button.setOnFocusChangeListener((view, focused) -> view.animate()

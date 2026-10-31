@@ -3,6 +3,15 @@
 Versions are the launcher's (`3.2-nothingX.Y`, versionCode in brackets).
 The base is upstream v3.2 (versionCode 11).
 
+## nothing5.9 (48) — 2026-10-31
+- **Doto date**: the header date is now a second dot-matrix hero next to
+  the clock, in the short `EEE dd MMM` format ("SAT 31 OCT"). Clock and
+  date share one size (38sp), tuned so the pair ends before the pill
+  row, and the pill row's bottom margin was adjusted so the text and
+  the pills share a vertical centre.
+- **Pill order**: Inputs, Theme, Wi-Fi, Settings (Theme moved after
+  Inputs).
+
 ## nothing5.8 (47) — 2026-10-31
 - **Theme picker**: a small palette-icon pill now sits left of the Inputs
   pill. It opens a list of all six themes (the active one marked ●);
