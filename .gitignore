@@ -1,0 +1,17 @@
+# Build output
+build/
+*/build/
+*.apk
+
+# Gradle / Android Studio
+.gradle/
+local.properties
+.idea/
+*.iml
+
+# Signing material — never commit a keystore
+*.keystore
+*.jks
+
+# OS noise
+.DS_Store

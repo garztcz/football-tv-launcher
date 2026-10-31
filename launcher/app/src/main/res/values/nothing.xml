@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nothing build options (read directly, not via Config). -->
+    <!-- PS5-style navigation blips replace the TV's system click sounds. -->
+    <bool name="nav_sounds">true</bool>
+</resources>
