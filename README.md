@@ -21,6 +21,20 @@ This repository contains two apps:
 dot-matrix clock, the club card with next-match countdown, recent form and
 the fixture list, and the standings card below.*
 
+## Themes
+
+Six club themes, switchable from the palette pill in the header (or the
+Settings menu's Theme row). Each theme restyles the ghost wallpaper, the
+accents and the club card. The five European themes stay current through
+the TV Live Feed add-on; Persebaya follows once its league's data source
+opens the new season.
+
+| | |
+| --- | --- |
+| ![Persebaya](docs/images/theme-persebaya.png) **Persebaya** — BRI Super League | ![Como 1907](docs/images/theme-como.png) **Como 1907** — Serie A |
+| ![Manchester United](docs/images/theme-manutd.png) **Manchester United** — Premier League | ![Arsenal](docs/images/theme-arsenal.png) **Arsenal** — Premier League |
+| ![Liverpool](docs/images/theme-liverpool.png) **Liverpool** — Premier League | ![Barcelona](docs/images/theme-barcelona.png) **Barcelona** — La Liga |
+
 ## Features
 
 - Nothing-style header: time-aware greeting, dot-matrix (Doto) clock, date,
